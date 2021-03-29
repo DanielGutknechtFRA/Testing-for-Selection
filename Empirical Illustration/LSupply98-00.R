@@ -1,0 +1,417 @@
+rm(list = ls())
+
+library(np)
+library(tidyr)
+library(quantreg)
+source("Multiplot.R")
+set.seed(12345)
+setwd("C:/Users/gutknecht/Mannheim/PROJECTS/CorradiGutknecht/Data/AB-Data/14030_Data_and_Programs/Data_files")
+
+
+## Define tau grid:
+tau_grid = c(.1,.2,.3,.4,.5,.6,.7,.8,.9) 
+
+## Set `size' to 3 for the years 1998 to 2000
+ys <- 3
+
+## Plug-in bandwidth (PlugIn == 0: `no'; PlugIn == 1: `yes')
+PlugIn <- 1
+
+if (PlugIn == 1) {
+  
+## A function to compute the median of the columns of a matrix
+colMedians <- function(data) {
+  colmed <- numeric(ncol(data))
+  for(i in 1:ncol(data)) {
+    colmed[i] <- median(data[,i])
+  }
+  return(colmed)
+}
+
+## Set number of restarts and size of resamples (for the subsampling Cross-validation procedure of Racine (1993); see paper for details)
+num.res <- 50
+n.sub <- 450
+
+}
+
+
+# Males
+data1=read.csv("data_1.csv")
+# Females
+data2=read.csv("data_2.csv")
+
+# Males == 0
+data1 = cbind(matrix(0,dim(data1)[1],1),data1)
+colnames(data1)[1] = c("gender")
+# Females == 1
+data2 = cbind(matrix(1,dim(data2)[1],1),data2)
+colnames(data2)[1] = c("gender")
+data = rbind(data1,data2)
+
+datalist = list()
+
+# Keep observations from year (100-ys) onwards
+yrfilter =  data$year >= 100-ys+1
+datatmp  =  data[yrfilter,]
+rm(yrfilter)
+datatmp = cbind(datatmp,matrix(0,dim(datatmp)[1],ys))
+
+for (l in 1:ys)
+{
+yrfilter = datatmp$year == 100-l+1
+datatmp[yrfilter,(dim(datatmp)[2]-ys + l)] = 1
+rm(yrfilter)
+}
+
+dataFL = datatmp
+
+  colnames(dataFL)[(dim(dataFL)[2]-ys+1):dim(dataFL)[2]] <- c("yr_98", "yr_99", "yr_00")
+  dataFL = data.frame(lw=dataFL$lw, work = dataFL$work,  benefit=dataFL$benefit , gender=factor(dataFL$gender), married=factor(dataFL$married), ed17=factor(dataFL$ed17),ed18=factor(dataFL$ed18), age=ordered(dataFL$age), reg_d1=factor(dataFL$reg_d1), reg_d2=factor(dataFL$reg_d2), reg_d3=factor(dataFL$reg_d3),reg_d4=factor(dataFL$reg_d4),reg_d5=factor(dataFL$reg_d5),reg_d6=factor(dataFL$reg_d6),reg_d7=factor(dataFL$reg_d7),reg_d8=factor(dataFL$reg_d8),reg_d9=factor(dataFL$reg_d9),reg_d10=factor(dataFL$reg_d10),reg_d11=factor(dataFL$reg_d11),kids_d1=factor(dataFL$kids_d1),kids_d2=factor(dataFL$kids_d2),kids_d3=factor(dataFL$kids_d3),kids_d4=factor(dataFL$kids_d4),kids_d5=factor(dataFL$kids_d5),kids_d6= factor(dataFL$kids_d6),yr_98= factor(dataFL$yr_98),yr_99= factor(dataFL$yr_99),yr_00= factor(dataFL$yr_00))
+  genderfil <- (dataFL$gender==1)
+  dataFLf <- dataFL[genderfil,]
+  dataFLm <- dataFL[!genderfil,]
+  rm(genderfil)
+
+  if (PlugIn==0) {
+
+  ## Nonparametric Propensity Score  
+    
+  pZf =  predict((npreg(formula = dataFLf$work ~ dataFLf$benefit + dataFLf$married  + dataFLf$ed17 + dataFLf$ed18 + dataFLf$age   + dataFLf$reg_d1 + dataFLf$reg_d2 + dataFLf$reg_d3 + dataFLf$reg_d4 + dataFLf$reg_d5 + dataFLf$reg_d6 + dataFLf$reg_d7 + dataFLf$reg_d8 + dataFLf$reg_d9 + dataFLf$reg_d10 + dataFLf$reg_d11   + dataFLf$kids_d1 + dataFLf$kids_d2 + dataFLf$kids_d3 + dataFLf$kids_d4 + dataFLf$kids_d5 + dataFLf$kids_d6 + dataFLf$yr_99 + dataFLf$yr_00)))
+  pZm =  predict((npreg(formula = dataFLm$work ~ dataFLm$benefit + dataFLm$married  + dataFLm$ed17 + dataFLm$ed18 + dataFLm$age   + dataFLm$reg_d1 + dataFLm$reg_d2 + dataFLm$reg_d3 + dataFLm$reg_d4 + dataFLm$reg_d5 + dataFLm$reg_d6 + dataFLm$reg_d7 + dataFLm$reg_d8 + dataFLm$reg_d9 + dataFLm$reg_d10 + dataFLm$reg_d11  + dataFLm$kids_d1 + dataFLm$kids_d2 + dataFLm$kids_d3 + dataFLm$kids_d4 + dataFLm$kids_d5 + dataFLm$kids_d6 + dataFLm$yr_99 + dataFLm$yr_00)))
+
+  } else if (PlugIn==1) {
+    
+    ## Create a storage matrix
+    bw.matf <- matrix(NA,nrow=num.res,ncol=(dim(cbind(dataFLf$benefit,dataFLf$married,dataFLf$ed17,dataFLf$ed18,dataFLf$age,dataFLf$reg_d1,dataFLf$reg_d2,dataFLf$reg_d3,dataFLf$reg_d4,dataFLf$reg_d5, dataFLf$reg_d6, dataFLf$reg_d7,dataFLf$reg_d8,dataFLf$reg_d9, dataFLf$reg_d10, dataFLf$reg_d11, dataFLf$kids_d1, dataFLf$kids_d2, dataFLf$kids_d3, dataFLf$kids_d4, dataFLf$kids_d5, dataFLf$kids_d6,dataFLf$yr_99, dataFLf$yr_00))[2]))
+    bw.matm <- matrix(NA,nrow=num.res,ncol=(dim(cbind(dataFLm$benefit,dataFLm$married,dataFLm$ed17,dataFLm$ed18,dataFLm$age,dataFLm$reg_d1,dataFLm$reg_d2,dataFLm$reg_d3,dataFLm$reg_d4,dataFLm$reg_d5, dataFLm$reg_d6, dataFLm$reg_d7,dataFLm$reg_d8,dataFLm$reg_d9, dataFLm$reg_d10, dataFLm$reg_d11, dataFLm$kids_d1, dataFLm$kids_d2, dataFLm$kids_d3, dataFLm$kids_d4, dataFLm$kids_d5, dataFLm$kids_d6,dataFLm$yr_99, dataFLm$yr_00))[2]))
+
+    ## Set Sub-Sample Size
+    nf <- dim(dataFLf)[1]
+    nm <- dim(dataFLm)[1]
+    
+        
+    ## Get the scale factors for resamples from the full sample of size n.sub
+    options(np.messages=FALSE)
+    for(i in 1:num.res) {
+      cat(paste(" Replication", i, "of", num.res, "...\r"))
+      objf <-  npregbw(formula = as.numeric(dataFLf$work) ~ dataFLf$benefit + dataFLf$married  + dataFLf$ed17 + dataFLf$ed18 + dataFLf$age   + dataFLf$reg_d1 + dataFLf$reg_d2 + dataFLf$reg_d3 + dataFLf$reg_d4 + dataFLf$reg_d5 + dataFLf$reg_d6 + dataFLf$reg_d7 + dataFLf$reg_d8 + dataFLf$reg_d9 + dataFLf$reg_d10 + dataFLf$reg_d11   + dataFLf$kids_d1 + dataFLf$kids_d2 + dataFLf$kids_d3 + dataFLf$kids_d4 + dataFLf$kids_d5 + dataFLf$kids_d6 + dataFLf$yr_99 + dataFLf$yr_00,subset=sample(nf,n.sub),regtype="lc", ckertype="epanechnikov")$bw
+      objm <-  npregbw(formula = as.numeric(dataFLm$work) ~ dataFLm$benefit + dataFLm$married  + dataFLm$ed17 + dataFLm$ed18 + dataFLm$age   + dataFLm$reg_d1 + dataFLm$reg_d2 + dataFLm$reg_d3 + dataFLm$reg_d4 + dataFLm$reg_d5 + dataFLm$reg_d6 + dataFLm$reg_d7 + dataFLm$reg_d8 + dataFLm$reg_d9 + dataFLm$reg_d10 + dataFLm$reg_d11  + dataFLm$kids_d1 + dataFLm$kids_d2 + dataFLm$kids_d3 + dataFLm$kids_d4 + dataFLm$kids_d5 + dataFLm$kids_d6 + dataFLm$yr_99 + dataFLm$yr_00,subset=sample(nm,n.sub),regtype="lc", ckertype="epanechnikov")$bw
+
+      bw.matf[i,] <- objf
+      bw.matm[i,] <- objm
+      
+      rm(objf,objm)
+      
+    }
+    
+    
+    ## Take the median scale factors
+    bwPf <- colMedians(bw.matf)
+    bwPm <- colMedians(bw.matm)
+    
+    ## Nonparametric Propensity score
+    
+    pZf =  predict(npreg(formula = as.numeric(dataFLf$work) ~ dataFLf$benefit + dataFLf$married  + dataFLf$ed17 + dataFLf$ed18 + dataFLf$age   + dataFLf$reg_d1 + dataFLf$reg_d2 + dataFLf$reg_d3 + dataFLf$reg_d4 + dataFLf$reg_d5 + dataFLf$reg_d6 + dataFLf$reg_d7 + dataFLf$reg_d8 + dataFLf$reg_d9 + dataFLf$reg_d10 + dataFLf$reg_d11  + dataFLf$kids_d1 + dataFLf$kids_d2 + dataFLf$kids_d3 + dataFLf$kids_d4 + dataFLf$kids_d5 + dataFLf$kids_d6 + dataFLf$yr_99 + dataFLf$yr_00 ,bws=bwPf,regtype="lc", ckertype="epanechnikov")) 
+    pZm =  predict(npreg(formula = as.numeric(dataFLm$work) ~ dataFLm$benefit + dataFLm$married  + dataFLm$ed17 + dataFLm$ed18 + dataFLm$age   + dataFLm$reg_d1 + dataFLm$reg_d2 + dataFLm$reg_d3 + dataFLm$reg_d4 + dataFLm$reg_d5 + dataFLm$reg_d6 + dataFLm$reg_d7 + dataFLm$reg_d8 + dataFLm$reg_d9 + dataFLm$reg_d10 + dataFLm$reg_d11  + dataFLm$kids_d1 + dataFLm$kids_d2 + dataFLm$kids_d3 + dataFLm$kids_d4 + dataFLm$kids_d5 + dataFLm$kids_d6 + dataFLm$yr_99 + dataFLm$yr_00 ,bws=bwPm,regtype="lc", ckertype="epanechnikov"))
+    
+  }
+
+# Estimate parametric (probit) propensity score:
+
+  pZf_probit <- predict(glm(formula = dataFLf$work ~ dataFLf$benefit + dataFLf$married  + dataFLf$ed17 + dataFLf$ed18 + dataFLf$age   + dataFLf$reg_d1 + dataFLf$reg_d2 + dataFLf$reg_d3 + dataFLf$reg_d4 + dataFLf$reg_d5 + dataFLf$reg_d6 + dataFLf$reg_d7 + dataFLf$reg_d8 + dataFLf$reg_d9 + dataFLf$reg_d10 + dataFLf$reg_d11   + dataFLf$kids_d1 + dataFLf$kids_d2 + dataFLf$kids_d3 + dataFLf$kids_d4 + dataFLf$kids_d5 + dataFLf$kids_d6 + dataFLf$yr_99 + dataFLf$yr_00, family = binomial(link = "probit")), type="response")
+  pZm_probit <- predict(glm(formula=dataFLm$work ~ dataFLm$benefit + dataFLm$married  + dataFLm$ed17 + dataFLm$ed18 + dataFLm$age   + dataFLm$reg_d1 + dataFLm$reg_d2 + dataFLm$reg_d3 + dataFLm$reg_d4 + dataFLm$reg_d5 + dataFLm$reg_d6 + dataFLm$reg_d7 + dataFLm$reg_d8 + dataFLm$reg_d9 + dataFLm$reg_d10 + dataFLm$reg_d11 + dataFLm$kids_d1 + dataFLm$kids_d2 + dataFLm$kids_d3 + dataFLm$kids_d4 + dataFLm$kids_d5 + dataFLm$kids_d6 + dataFLm$yr_99 + dataFLm$yr_00, family = binomial(link = "probit")), type="response")
+
+
+rm(data,data1,data2,datatmp)
+str(dataFLf)
+str(dataFLm)
+
+
+dataFLf = data.frame(dataFLf,pZf,pZf_probit)
+dataFLm = data.frame(dataFLm,pZm,pZm_probit)
+
+# Selected Sample
+dataFLfs =dataFLf[dataFLf$work==1,]
+dataFLms =dataFLm[dataFLm$work==1,]
+
+Yfs <- dataFLfs[,1]
+Xfs <- dataFLfs[,4:(dim(dataFLfs)[2]-3)]
+Pfs <- dataFLfs[,(dim(dataFLfs)[2]-1)]
+
+Yms <- dataFLms[,1]
+Xms <- dataFLms[,4:(dim(dataFLms)[2]-3)]
+Pms <- dataFLms[,(dim(dataFLms)[2]-1)]
+
+## Estimate Nonparametric Quantile Functions:
+
+## Create a storage matrix
+bw.matf <- matrix(NA,nrow=num.res,ncol=(dim(Xfs)[2]-1))
+bw.matm <- matrix(NA,nrow=num.res,ncol=(dim(Xms)[2]-1))
+
+
+## Set Sample Size
+nf <- length(Yfs)
+nm <- length(Yms)
+
+## Set number of restarts and size of resamples (for the subsampling Cross-validation procedure of Racine (1993); see paper for details)
+num.res <- 50
+n.sub <- 450
+
+
+## Get the scale factors for resamples from the full sample of size n.sub
+options(np.messages=FALSE)
+for(i in 1:num.res) {
+  cat(paste(" Replication", i, "of", num.res, "...\r"))
+    objf <-  npregbw(formula=  Yfs ~  Xfs$married  + Xfs$ed17 + Xfs$ed18 + Xfs$age  + Xfs$reg_d1 + Xfs$reg_d2 + Xfs$reg_d3 + Xfs$reg_d4 + Xfs$reg_d5 + Xfs$reg_d6 + Xfs$reg_d7 + Xfs$reg_d8 + Xfs$reg_d9 + Xfs$reg_d10 + Xfs$reg_d11  + Xfs$kids_d1 + Xfs$kids_d2 + Xfs$kids_d3 + Xfs$kids_d4 + Xfs$kids_d5 + Xfs$kids_d6 + Xfs$yr_99 + Xfs$yr_98, regtype="lc", subset=sample(nf,n.sub), ckertype="epanechnikov")
+    objm <-  npregbw(formula = Yms ~ Xms$married  + Xms$ed17 + Xms$ed18 + Xms$age   + Xms$reg_d1 + Xms$reg_d2 + Xms$reg_d3 + Xms$reg_d4 + Xms$reg_d5 + Xms$reg_d6 + Xms$reg_d7+ Xms$reg_d8 + Xms$reg_d9 + Xms$reg_d10 + Xms$reg_d11  + Xms$kids_d1 + Xms$kids_d2 + Xms$kids_d3 + Xms$kids_d4 + Xms$kids_d5 + Xms$kids_d6 + Xms$yr_99 + Xms$yr_98, regtype="lc",subset=sample(nm,n.sub), ckertype="epanechnikov")
+
+  
+  
+  bw.matf[i,] <- objf$bw
+  bw.matm[i,] <- objm$bw
+  
+
+  rm(objf,objm)
+  
+}
+
+## Take the median scale factors
+bwf <- colMedians(bw.matf)
+bwm <- colMedians(bw.matm)
+
+rm(bw.matf,bw.matm,nf,nm)
+
+qfhat <- vector(mode="list",dim(as.matrix(tau_grid))[1])
+qmhat <- vector(mode="list",dim(as.matrix(tau_grid))[1])
+
+
+ehatf <- vector(mode="list",dim(as.matrix(tau_grid))[1])
+ehatm <- vector(mode="list",dim(as.matrix(tau_grid))[1])
+
+for (tau in 1:length(tau_grid)) {
+  
+  
+  qqf <- matrix(0,length(Xfs),1,byrow=TRUE)
+  qqm <- matrix(0,length(Xms),1,byrow=TRUE)
+  
+  
+  
+  for(i in 1:dim(Xfs)[1]) {
+    Xfweight <- np::npksum(txdat=Xfs[,2:dim(Xfs)[2]],exdat=Xfs[i,2:dim(Xfs)[2]], leave.one.out=FALSE, bws=bwf , ckertype="epanechnikov", return.kernel.weights=TRUE)$kw
+    qqf[i] <- rq(Yfs~1, weights=Xfweight, tau=tau_grid[[tau]], ci=FALSE)$coef[1.]
+    
+  }
+  
+  ehatf[[tau]] = Yfs-qqf
+  qfhat[[tau]] <- qqf
+
+  for(i in 1:dim(Xms)[1]) {
+   
+    Xmweight <- np::npksum(txdat=Xms[,2:dim(Xms)[2]],exdat=Xms[i,2:dim(Xms)[2]], leave.one.out=FALSE, bws=bwm , ckertype="epanechnikov", return.kernel.weights=TRUE)$kw
+    qqm[i] <- rq(Yms~1, weights=Xmweight, tau=tau_grid[[tau]], ci=FALSE)$coef[1.]
+    
+    
+  }
+
+  ehatm[[tau]] = Yms-qqm
+  qmhat[[tau]] <- qqm
+
+}
+
+## Estimation of Conditional (Unconditional) Distribution Function of quantile residuals:
+
+## Set Sample Size
+nf <- length(Pfs)
+nm <- length(Pms)
+
+## Set number of restarts and size of resamples (for the subsampling Cross-validation procedure of Racine (1993); see paper for details)
+num.res <- 50
+n.sub <- 450
+
+
+## Create a storage matrix
+bw.CFmatf <- matrix(NA,nrow=num.res,ncol=(dim(Xfs)[2]-1))
+bw.CFmatm <- matrix(NA,nrow=num.res,ncol=(dim(Xms)[2]-1))
+
+
+## Get the scale factors for resamples from the full sample of size n.sub
+options(np.messages=FALSE)
+for(i in 1:num.res) {
+  cat(paste(" Replication", i, "of", num.res, "...\r"))
+    objf <-  npregbw(formula=  Pfs ~ Xfs$married  + Xfs$ed17 + Xfs$ed18 + Xfs$age  + Xfs$reg_d1 + Xfs$reg_d2 + Xfs$reg_d3 + Xfs$reg_d4 + Xfs$reg_d5 + Xfs$reg_d6 + Xfs$reg_d7 + Xfs$reg_d8 + Xfs$reg_d9 + Xfs$reg_d10 + Xfs$reg_d11  + Xfs$kids_d1 + Xfs$kids_d2 + Xfs$kids_d3 + Xfs$kids_d4 + Xfs$kids_d5 + Xfs$kids_d6 + Xfs$yr_99 + Xfs$yr_98, regtype="lc", subset=sample(nf,n.sub), ckertype="epanechnikov")
+    objm <-  npregbw(formula = Pms ~ Xms$married  + Xms$ed17 + Xms$ed18 + Xms$age  + Xms$reg_d1 + Xms$reg_d2 + Xms$reg_d3 + Xms$reg_d4 + Xms$reg_d5 + Xms$reg_d6 + Xms$reg_d7 + Xms$reg_d8 + Xms$reg_d9 + Xms$reg_d10 + Xms$reg_d11   + Xms$kids_d1 + Xms$kids_d2 + Xms$kids_d3 + Xms$kids_d4 + Xms$kids_d5 + Xms$kids_d6 + Xms$yr_99 + Xms$yr_98, regtype="lc",subset=sample(nm,n.sub), ckertype="epanechnikov")
+
+  
+  
+  bw.CFmatf[i,] <- objf$bw
+  bw.CFmatm[i,] <- objm$bw
+  
+  rm(objf,objm)
+}
+  ## Take the median scale factors
+  bwCFf <- colMedians(bw.CFmatf)
+  bwCFm <- colMedians(bw.CFmatm)
+  
+  rm(bw.CFmatf,bw.CFmatm,nm,nf)
+  
+
+
+Chatpf <- vector(mode="list",dim(as.matrix(tau_grid))[1])
+Chatpm <- vector(mode="list",dim(as.matrix(tau_grid))[1])
+
+
+for (tau in 1:length(tau_grid)) {
+  
+  BWef <- npregbw(formula=  Pfs ~ ehatf[[tau]],regtype="lc", ckertype="epanechnikov")$bw
+  
+  for (i in 1:length(Pfs)) {
+    
+    fphatf <- c(np::npksum(txdat=data.frame(Xfs[,2:dim(Xfs)[2]],ehatf[[tau]]),exdat=data.frame(Xfs[i,2:dim(Xfs)[2]],0), leave.one.out=FALSE, bandwidth.divide=TRUE, bws=c(bwCFf,BWef), ckertype="epanechnikov")$ksum)
+    Chatpf[[tau]][i] <- (c(np::npksum(tydat=as.numeric(Pfs<= Pfs[i]),txdat=data.frame(Xfs[,2:dim(Xfs)[2]],ehatf[[tau]]),exdat=data.frame(Xfs[i,2:dim(Xfs)[2]],0), leave.one.out=FALSE, bandwidth.divide=TRUE, bws=c(bwCFf,BWef), ckertype="epanechnikov")$ksum))/fphatf
+  }
+  BWem <- npregbw(formula=  Pms ~ as.numeric(ehatm[[tau]]),regtype="lc", ckertype="epanechnikov")$bw
+  
+  for (i in 1:length(Pms)) {
+    
+    fphatm <- c(np::npksum(txdat=data.frame(Xms[,2:dim(Xms)[2]],ehatm[[tau]]),exdat=data.frame(Xms[i,2:dim(Xms)[2]],0), leave.one.out=FALSE, bandwidth.divide=TRUE, bws=c(bwCFm,BWem), ckertype="epanechnikov")$ksum)
+    Chatpm[[tau]][i] <-  (c(np::npksum(tydat=as.numeric(Pms<=Pms[i]),txdat=data.frame(Xms[,2:dim(Xms)[2]],ehatm[[tau]]),exdat=data.frame(Xms[i,2:dim(Xms)[2]],0), leave.one.out=FALSE, bandwidth.divide=TRUE, bws=c(bwCFm,BWem), ckertype="epanechnikov")$ksum))/fphatm
+  }
+  
+}
+
+rm(ehatf,fphatf,ehatm,fphatm)
+
+# Unconditional Distribution Functions
+
+#UChatpf <- ecdf(Pfs)
+#UChatpm <- ecdf(Pms)
+
+
+save.image("SelectedDataTmp98-00_NP.RData")
+
+## Evaluation matrix functions
+IndMatX <- function(X) {
+  X <- as.matrix(X)
+  indx <- matrix(NA,dim(X)[1],dim(X)[1])
+  for( i in 1:dim(X)[1]) {
+    indx[,i] <- apply((X<=X[i,]), 1, prod) 
+  }
+  return(indx)
+}
+
+IndMatZ <- function(Z) {
+  Z <- as.matrix(Z)
+  indz <- matrix(NA,dim(Z)[1],dim(Z)[1])
+  for (i in 1:dim(Z)[1]) {
+    indz[,i] <- as.numeric(Z<=Z[i])
+  }
+  return(indz)
+}
+
+T1IndMatZ <- function(Z,Fz) {
+  Z <- as.matrix(Z)
+  indz <- matrix(NA,dim(Z)[1],dim(Z)[1])
+    for (i in 1:dim(Z)[1]) {
+      indz[,i] <- ((Z<=Z[i])-Fz[i])
+    }
+  return(indz)
+}
+
+
+
+
+
+####################
+# Conditional Mean #
+####################
+
+
+## FIRST TEST
+ 
+CM_stat_1f = DMTest(Yfs,Xfs,Pfs, size=0.1, B=100,a=bwf , ckertype="epanechnikov", stat="KS")
+CM_stat_1m = DMTest(Yms,Xms,Pms, size=0.1, B=100,a=bwm , ckertype="epanechnikov", stat="KS")
+
+# Remark (1): no higher order kernel function used.
+
+
+## SECOND TEST
+## Set the trimming and the bw parameter:
+delta = .9
+hP    = .1
+
+#CM_stat_2f     = LocDMTest(Yfs,Xfs,Pfs, delta, hP, size=0.1, B=100, ckertype="epanechnikov", stat="KS")
+#CM_stat_2m     = LocDMTest(Yms,Xms,Pms, delta, hP, size=0.1, B=100, ckertype="epanechnikov", stat="KS")
+
+CM_stat_2f     = LocDMTest(Yfs,Xfs,Pfs, delta, hP, size=0.1, ckertype="epanechnikov", stat="KS")
+CM_stat_2m     = LocDMTest(Yms,Xms,Pms, delta, hP, size=0.1, ckertype="epanechnikov", stat="KS")
+
+
+
+
+########################
+# Conditional Quantile #
+########################
+
+
+## FIRST TEST
+
+# Use marginal (MD==1) or conditional (MD==0) CDF in the bootstrap statistic 
+#MD    <- 0
+
+IndXf <- IndMatX(Xfs[,2:dim(Xfs)[2]])
+IndZf <- IndMatZ(Pfs)
+#if (MD==1) {
+#  T1IndZf <- T1IndMatZ(Pfs,UChatpf(Pfs))
+#} else {
+  
+  T1IndZf <- vector(mode="list",dim(as.matrix(tau_grid))[1])
+  
+  for (tau in 1:length(tau_grid)) {
+    T1IndZf[[tau]] <- T1IndMatZ(Pfs,Chatpf[[tau]])
+  }
+#}
+CQ_stat_1f <- VBDNTest(Yfs,IndXf,IndZf,T1IndZf,qfhat, tau_grid, size=c(.1,.05), B=400,MD)
+
+IndXm <- IndMatX(Xms[,2:dim(Xms)[2]])
+IndZm <- IndMatZ(Pms)
+#if (MD==1) {
+#  T1IndZm <- T1IndMatZ(Pms,UChatpm(Pms))
+#} else {
+  
+  T1IndZm <- vector(mode="list",dim(as.matrix(tau_grid))[1])
+  
+  for (tau in 1:length(tau_grid)) {
+    T1IndZm[[tau]] <- T1IndMatZ(Pms,Chatpm[[tau]])
+  }
+#}
+CQ_stat_1m <- VBDNTest(Yms,IndXm,IndZm,T1IndZm,qmhat, tau_grid, size=c(.1,.05), B=400,MD)
+
+
+
+## SECOND TEST
+
+## Kernel Function
+Kweights <- function(arg) {
+  arg <- as.matrix(arg)
+  return((3/4)*(1-(arg^2))*(as.numeric(abs(arg)<=1)))
+  }
+
+
+
+
+## Set the trimming and the bw parameter:
+delta <- .95
+hp    <- .05
+
+
+
+# compute kernel weights
+kweightsf <-  Kweights((Pfs-delta)/hp)
+CQ_stat_2f <- LocVBDNTest(Yfs,qfhat, kweightsf, size=c(.1,.05), tau_grid, B=1000)
+
+# compute kernel weights
+kweightsm <- Kweights((Pms-delta)/hp)
+CQ_stat_2m <- LocVBDNTest(Yms,qmhat, kweightsm, size=c(.1,.05), tau_grid, B=1000)
+
+## SAVE WORK SPACE
+save.image("SelectedDataFINAL98-00_NP.RData")
