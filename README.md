@@ -8,17 +8,13 @@ There are two subfolders contained in this repository:
 
 # 1. Empirical Illustration
 
-This folder contains all R codes required to reproduce (parts of) the empirical illustration in Tables 3 (p.30) and 4 (p.31). The codes can be found in the following subfolders:
+This folder contains all R codes required to reproduce (parts of) the empirical illustration in Tables 3 (p.30) and 4 (p.31):
 
-# 1.1 Mean:
- - CM-SimsFINAL.R - Master R file of the simulations for the conditional mean. 
- - CMTest1FINAL.R - R file containing routines for the first test. 
- - CMTest2FINAL.R - R file containing routines for the second test.
-# 1.2 Quantile:
- - CQ-SimsFINAL-Test-1 - R file containing routines for the first (conditional quantile) test. 
- - CQ-SimsFINAL-Test-2-BW-Select - R file containing routines for the second (conditional quantile) test (with data-driven bandwidth selection). 
- - CQ-SimsFINAL-Test-2-NO-BW-Select - R file containing routines for the second (conditional quantile) test (without data-driven bandwidth selection). 
-
+ - LSupply98-00.R - Master R file of which reads in the data, estimates all required quantities, and carries out tests for sample selection for the nonparametric conditional   mean (not in the paper) and quantile. 
+ - CM-A_Tests.R - R file containing routines for the sample selection tests for the conditional mean function. 
+ - CQ-A_Tests.R - R file containing routines for the sample selection tests for the conditional quantile function(s). 
+ - data_1.csv - CSV file containing wage data in  .csv format from the UK Expenditure Survey. Source of data: Arellano, M. and S. Bonhomme (2017). Quantile selection models with an application to understanding changes in wage inequality. Econometrica 85 (1), 1-28. (http://dx.doi.org/10.3982/ECTA14030)
+ - data_1.csv - CSV file containing wage data in  .csv format from the UK Expenditure Survey. Source of data: Arellano, M. and S. Bonhomme (2017). Quantile selection models with an application to understanding changes in wage inequality. Econometrica 85 (1), 1-28. (http://dx.doi.org/10.3982/ECTA14030)
 
 # 2. Simulations
 
