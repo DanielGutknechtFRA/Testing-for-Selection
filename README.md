@@ -10,10 +10,10 @@ There are two subfolders contained in this repository:
 
 This folder contains all R codes required to reproduce (parts of) the empirical illustration in Tables 3 (p.30) and 4 (p.31):
 
- - LSupply95-97_20-04-22.R - Master R file of which reads in the data, estimates all required quantities, and carries out tests for sample selection for the nonparametric conditional   mean (not in the paper) and quantile on the subsample 1995-1997. 
- - LSupply98-00_20-04-22.R - Master R file of which reads in the data, estimates all required quantities, and carries out tests for sample selection for the nonparametric conditional   mean (not in the paper) and quantile on the subsample 1998-2000. 
- - CM-A_Tests_20-04-22.R - R file containing routines for the sample selection tests for the conditional mean function. 
- - CQ-A_Tests_20-04-22.R - R file containing routines for the sample selection tests for the conditional quantile function(s). 
+ - LSupply95-97_20-04-22.R - R file of that reads in the data, estimates all required quantities, and carries out tests for sample selection for the nonparametric conditional   mean (not in the paper) and quantile on the subsample 1995-1997. 
+ - LSupply98-00_20-04-22.R - R file of that reads in the data, estimates all required quantities, and carries out tests for sample selection for the nonparametric conditional   mean (not in the paper) and quantile on the subsample 1998-2000. 
+ - CM-A_Tests_20-04-22.R - R file containing relevant functions for the sample selection tests for the conditional mean function. 
+ - CQ-A_Tests_20-04-22.R - R file containing relevant functions for the sample selection tests for the conditional quantile function(s). 
  - data_1.csv - CSV file containing wage data in  .csv format from the UK Expenditure Survey. Source of data: Arellano, M. and S. Bonhomme (2017). Quantile selection models with an application to understanding changes in wage inequality. Econometrica 85 (1), 1-28. (http://dx.doi.org/10.3982/ECTA14030)
  - data_1.csv - CSV file containing wage data in  .csv format from the UK Expenditure Survey. Source of data: Arellano, M. and S. Bonhomme (2017). Quantile selection models with an application to understanding changes in wage inequality. Econometrica 85 (1), 1-28. (http://dx.doi.org/10.3982/ECTA14030)
 
