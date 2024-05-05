@@ -1,5 +1,5 @@
 # Testing-for-Selection
-This repository contains R code to perform nonparametric (distribution free) tests for sample selection. The code replicates the empirical analysis and the simulation from the paper "Testing for Quantile Sample Selection" by V. Corradi and Daniel Gutknecht (permanent link to working paper: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3805043; published version: https://doi.org/10.1093/ectj/utac027). Note that all page references below are w.r.t. the current version of the paper from this link. Please refer to the paper for further details.
+This repository contains R code to perform nonparametric (distribution free) tests for sample selection. The code replicates the empirical analysis and the simulation from the paper "Testing for Quantile Sample Selection" by V. Corradi and Daniel Gutknecht  in the Econometrics Journal (vol. 26:2, pp.147-173; permanent link to working paper: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3805043; published version: https://doi.org/10.1093/ectj/utac027). Note that all page references below are w.r.t. the current version of the paper from this link. Please refer to the paper for further details.
 
 There are two subfolders contained in this repository:
 
@@ -17,7 +17,7 @@ This folder contains all R codes for the empirical illustration (the files use d
  - data_1.csv - CSV file containing wage data in  .csv format from the UK Expenditure Survey. Source of data: Arellano, M. and S. Bonhomme (2017). Quantile selection models with an application to understanding changes in wage inequality. Econometrica 85 (1), 1-28. (http://dx.doi.org/10.3982/ECTA14030)
  - data_2.csv - CSV file containing wage data in  .csv format from the UK Expenditure Survey. Source of data: Arellano, M. and S. Bonhomme (2017). Quantile selection models with an application to understanding changes in wage inequality. Econometrica 85 (1), 1-28. (http://dx.doi.org/10.3982/ECTA14030)
 
-## Subfoler "Published Paper" (replicates Tables from empirical illustration of published paper):
+## Subfolder "Published Paper" (replicates Tables from empirical illustration of published paper):
  - LSupply95-97_08-09-22.R - R file reproduces the results from the empirical illustration in Tables 1 and 2. 
  - LSupply98-00_08-09-22.R - R file reproduces the results from the empirical illustration in Tables 1 and 2.
  - BWs-1995-1997.csv: CSV file containing the cross-validated bandwidths of different nonparametric objects used to construct the test statistics in Tables 1 and 2 (1995-1997).
