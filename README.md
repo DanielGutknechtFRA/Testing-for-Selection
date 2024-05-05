@@ -17,7 +17,7 @@ This folder contains all R codes for the empirical illustration (the files use d
  - data_1.csv - CSV file containing wage data in  .csv format from the UK Expenditure Survey. Source of data: Arellano, M. and S. Bonhomme (2017). Quantile selection models with an application to understanding changes in wage inequality. Econometrica 85 (1), 1-28. (http://dx.doi.org/10.3982/ECTA14030)
  - data_1.csv - CSV file containing wage data in  .csv format from the UK Expenditure Survey. Source of data: Arellano, M. and S. Bonhomme (2017). Quantile selection models with an application to understanding changes in wage inequality. Econometrica 85 (1), 1-28. (http://dx.doi.org/10.3982/ECTA14030)
 
-# published version (replicates all Tables from the empirical illustration of the published paper):
+## published version (replicates Tables from empirical illustration of published paper):
  - LSupply95-97_08-09-22.R - R file reproduces the results from the empirical illustration in Tables 1 and 2. 
  - LSupply98-00_08-09-22.R - R file reproduces the results from the empirical illustration in Tables 1 and 2.
  - BWs-1995-1997.csv: CSV file containing the cross-validated bandwidths of different nonparametric objects used to construct the test statistics in Tables 1 and 2 (1995-1997).
@@ -37,6 +37,6 @@ This folder contains all R codes for the Monte Carlo simulations (the files do n
  - CQ-SimsFINAL-TEST-2-BW-Select_20-04-22 - R file containing routines for the second (conditional quantile) test (with data-driven bandwidth selection). 
  - CQ-SimsFINAL-TEST-2-NO-BW-Select_20-04-22 - R file containing routines for the second (conditional quantile) test (without data-driven bandwidth selection).
 
-# published version (replicates all Tables from the Monte Carlo simulations of the published paper):
+## published version (replicates Tables from Monte Carlo simulations of published paper):
  - CG-Sims-Table-1-FINAL-08-09-22- R file containing routines for the first (conditional) quantile test that reproduces TABLE 1 of supplementary material.
  - CG-Sims-Table-2&3-FINAL-08-09-22 - the R file reproduces the results of TABLES 2 and 3 of the supplementary material.
