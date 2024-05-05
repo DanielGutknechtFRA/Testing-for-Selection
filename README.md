@@ -15,14 +15,14 @@ This folder contains all R codes for the empirical illustration (the files use d
  - CM-A_Tests_20-04-22.R - R file containing relevant functions for the sample selection tests for the conditional mean function. 
  - CQ-A_Tests_20-04-22.R - R file containing relevant functions for the sample selection tests for the conditional quantile function(s). 
  - data_1.csv - CSV file containing wage data in  .csv format from the UK Expenditure Survey. Source of data: Arellano, M. and S. Bonhomme (2017). Quantile selection models with an application to understanding changes in wage inequality. Econometrica 85 (1), 1-28. (http://dx.doi.org/10.3982/ECTA14030)
- - data_1.csv - CSV file containing wage data in  .csv format from the UK Expenditure Survey. Source of data: Arellano, M. and S. Bonhomme (2017). Quantile selection models with an application to understanding changes in wage inequality. Econometrica 85 (1), 1-28. (http://dx.doi.org/10.3982/ECTA14030)
+ - data_2.csv - CSV file containing wage data in  .csv format from the UK Expenditure Survey. Source of data: Arellano, M. and S. Bonhomme (2017). Quantile selection models with an application to understanding changes in wage inequality. Econometrica 85 (1), 1-28. (http://dx.doi.org/10.3982/ECTA14030)
 
-## published version (replicates Tables from empirical illustration of published paper):
+## Subfoler "Published Paper" (replicates Tables from empirical illustration of published paper):
  - LSupply95-97_08-09-22.R - R file reproduces the results from the empirical illustration in Tables 1 and 2. 
  - LSupply98-00_08-09-22.R - R file reproduces the results from the empirical illustration in Tables 1 and 2.
  - BWs-1995-1997.csv: CSV file containing the cross-validated bandwidths of different nonparametric objects used to construct the test statistics in Tables 1 and 2 (1995-1997).
  - BWs-1998-2000.csv - CSV file containing the cross-validated bandwidths of different nonparametric objects used to construct the test statistics in Tables 1 and 2 (1998-2000).
-
+Note: requires the CSV files data_1.csv and data_2.csv.
 
 # 2. Simulations
 
@@ -37,6 +37,6 @@ This folder contains all R codes for the Monte Carlo simulations (the files do n
  - CQ-SimsFINAL-TEST-2-BW-Select_20-04-22 - R file containing routines for the second (conditional quantile) test (with data-driven bandwidth selection). 
  - CQ-SimsFINAL-TEST-2-NO-BW-Select_20-04-22 - R file containing routines for the second (conditional quantile) test (without data-driven bandwidth selection).
 
-## published version (replicates Tables from Monte Carlo simulations of published paper):
+## Subfolder "Published Paper" (replicates Tables from Monte Carlo simulations of published paper):
  - CG-Sims-Table-1-FINAL-08-09-22- R file containing routines for the first (conditional) quantile test that reproduces TABLE 1 of supplementary material.
  - CG-Sims-Table-2&3-FINAL-08-09-22 - the R file reproduces the results of TABLES 2 and 3 of the supplementary material.
